@@ -1,20 +1,7 @@
 import json
 
-import pytest
-
 from app import register, app
-import psycopg2
-import psycopg2.extras
-
-
-@pytest.fixture
-def cursor():
-    conn = psycopg2.connect("dbname=postgres")
-    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    yield cur
-    conn.commit()
-    cur.close()
-    conn.close()
+from fixtures import cursor
 
 
 def test_register(cursor):
@@ -50,4 +37,3 @@ def test_handle_register(cursor):
     assert password == rec["password"]
     assert email == rec["email"]
     cursor.execute("DELETE FROM users WHERE name = %s;", (username,))
-
