@@ -1,13 +1,12 @@
 import json
 
 from app import register, app
-from fixtures import cursor
 
 
-def test_register(cursor):
-    username = "julian"
-    password = "12345"
-    email = "ju@galk;sjdf"
+def test_register(cursor, random_user):
+    username = random_user.name
+    password = random_user.password
+    email = random_user.email
     register(username, password, email)
     cursor.execute("SELECT * FROM users WHERE name = %s;", (username,))
     rec = cursor.fetchone()
@@ -28,9 +27,7 @@ def test_handle_register(cursor):
         "password": password,
         "email": email,
     }), follow_redirects=True, content_type='application/json')
-    print(resp.data)
     assert resp.status_code == 200
-
     cursor.execute("SELECT * FROM users WHERE name = %s;", (username,))
     rec = cursor.fetchone()
     assert username == rec["name"]

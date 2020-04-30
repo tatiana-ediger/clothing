@@ -55,5 +55,40 @@ def login(username, password):
     return token
 
 
+@app.route('/add-clothing', methods=["POST"])
+def handle_add_clothing():
+    data = request.get_json()
+    token = data["token"]
+    clothing_name = data["clothing_name"]
+    color = data["color"]
+    user_id = authenticate(token)
+    add_clothing(user_id, clothing_name, color)
+
+
+def authenticate(token):
+    conn = psycopg2.connect("dbname=postgres")
+    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cur.execute("SELECT user_id FROM tokens WHERE token = %s",
+                (token,))
+    rec = cur.fetchone()
+    if rec is None:
+        return None
+    user_id = rec["user_id"]
+    conn.commit()
+    cur.close()
+    conn.close()
+    return user_id
+
+
+def add_clothing(user_id, clothing_name, color):
+    conn = psycopg2.connect("dbname=postgres")
+    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cur.execute("INSERT INTO clothing (user_id, name, color) VALUES (%s, %s, %s)",
+                (user_id, clothing_name, color))
+    conn.commit()
+    cur.close()
+    conn.close()
+
+
 if __name__ == '__main__':
     app.run()

@@ -1,11 +1,10 @@
 from app import login, register
-from fixtures import cursor
 
 
-def test_successful_login(cursor):
-    username = "noah"
-    password = "animalc"
-    email = "fa;sdkl@"
+def test_successful_login(cursor, random_user):
+    username = random_user.name
+    password = random_user.password
+    email = random_user.email
     register(username, password, email)
     token = login(username, password)
     cursor.execute("""SELECT token
@@ -18,11 +17,11 @@ def test_successful_login(cursor):
     cursor.execute("DELETE FROM users WHERE name = %s;", (username,))
 
 
-def test_login_incorrect_password(cursor):
-    username = "noah"
-    password = "animalc"
-    password2 = "askdlfj"
-    email = "fa;sdkl@"
+def test_login_incorrect_password(cursor, random_user):
+    username = random_user.name
+    password = random_user.password
+    password2 = password + "hi"
+    email = random_user.email
     register(username, password, email)
     token = login(username, password2)
     assert token is None
