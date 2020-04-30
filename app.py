@@ -93,5 +93,17 @@ def add_clothing(user_id, clothing_name, color):
     conn.close()
 
 
+def list_clothing(user_id):
+    out = []
+    conn = psycopg2.connect("dbname=postgres")
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cur.execute("SELECT name, color FROM clothing WHERE user_id = %s ORDER BY name", (user_id,))
+    for row in cur:
+        out.append(row)
+    cur.close()
+    conn.close()
+    return out
+
+
 if __name__ == '__main__':
     app.run()
