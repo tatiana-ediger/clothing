@@ -20,12 +20,10 @@ def cursor():
 
 
 @pytest.fixture
-def valid_token(cursor, random_user):
-    register(random_user.name, random_user.password, random_user.email)
+def valid_token(cursor, random_user, valid_user_id):
     token = login(random_user.name, random_user.password)
     yield token
     cursor.execute("DELETE FROM tokens WHERE token = %s;", (token,))
-    cursor.execute("DELETE FROM users WHERE name = %s;", (random_user.name,))
 
 
 @pytest.fixture
@@ -46,5 +44,6 @@ class User:
 @pytest.fixture
 def random_user():
     def generate_string():
-        return str(random.choices(string.printable, k=random.randint(2,20)))
+        return ''.join(random.choices(string.printable, k=random.randint(2, 20)))
+
     return User(generate_string(), generate_string(), generate_string())

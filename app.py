@@ -66,6 +66,9 @@ def handle_add_clothing():
 
 
 def authenticate(token):
+    """
+    :return: the user id the given token is valid for, or None if the token is invalid
+    """
     conn = psycopg2.connect("dbname=postgres")
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cur.execute("SELECT user_id FROM tokens WHERE token = %s",
